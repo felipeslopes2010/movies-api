@@ -3,7 +3,7 @@ const knex = require("../database/knex");
 class NotesController {
     async create(request, response) {
         const { title, description, rating, tags } = request.body;
-        const { user_id } = request.params;
+        const user_id = request.user.id;
 
         const [note_id] = await knex("notes").insert({
             title,
@@ -40,7 +40,13 @@ class NotesController {
     async delete(request, response) {
         const { id } = request.params;
 
-        await knex("notes").where({ id }).delete();
+        const noteToBeDeleted = await knex("notes").where({ id }).delete();
+
+        if(!noteToBeDeleted) {
+            return response.json({
+                message: "Nota já excluída"
+            });
+        }
 
         return response.json({
             message: "Nota deletada com sucesso"
@@ -48,7 +54,8 @@ class NotesController {
     }
 
     async index(request, response) {
-        const { user_id, title, tags } = request.query;
+        const { title, tags } = request.query;
+        const user_id = request.user.id;
 
         let notes;
 
