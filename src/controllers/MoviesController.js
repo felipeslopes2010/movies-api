@@ -17,15 +17,17 @@ class MoviesController {
             user_id
         });
 
-        const tagsInsert = tags.map(name => {
-            return {
-                movie_id,
-                name,
-                user_id
-            }
-        });
+        if(tags.length !== 0) {      
+            const tagsInsert = tags.map(name => {
+                return {
+                    movie_id,
+                    name,
+                    user_id
+                }
+            });
 
-        await knex("tags").insert(tagsInsert);
+            await knex("tags").insert(tagsInsert);
+    }
 
         return response.status(201).json();
     }
