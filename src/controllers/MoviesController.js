@@ -17,6 +17,10 @@ class MoviesController {
             user_id
         });
 
+        if(tags.length > 3) {
+            throw new AppError("Limite máximos de Tags atingido");
+        }
+
         if(tags.length !== 0) {      
             const tagsInsert = tags.map(name => {
                 return {
