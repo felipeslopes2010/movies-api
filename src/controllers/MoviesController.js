@@ -5,23 +5,27 @@ class MoviesController {
     async create(request, response) {
         const { title, description, rating, tags } = request.body;
         const user_id = request.user.id;
-
-        if(rating < 1 || rating > 5) {
+    
+        if (rating < 1 || rating > 5) {
             throw new AppError("A nota deverá estar entre 1 e 5.");
         }
-
+    
         const [movie_id] = await knex("movies").insert({
             title,
             description,
             rating,
-            user_id
+            user_id,
+            created_at: knex.raw("DATETIME('now', '-3 hours')"),
+            updated_at: knex.raw("DATETIME('now', '-3 hours')")
         });
-
-        if(tags.length > 3) {
+    
+        const movie = await knex("movies").where({ id: movie_id }).first();
+    
+        if (tags.length > 3) {
             throw new AppError("Limite máximos de Tags atingido");
         }
-
-        if(tags.length !== 0) {      
+    
+        if (tags.length !== 0) {      
             const tagsInsert = tags.map(name => {
                 return {
                     movie_id,
@@ -29,12 +33,13 @@ class MoviesController {
                     user_id
                 }
             });
-
+    
             await knex("tags").insert(tagsInsert);
+        }
+    
+        return response.status(201).json(movie);
     }
-
-        return response.status(201).json();
-    }
+     
 
     async show(request, response) {
         const { id } = request.params;
