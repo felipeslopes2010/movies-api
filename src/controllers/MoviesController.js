@@ -5,6 +5,12 @@ class MoviesController {
     async create(request, response) {
         const { title, description, rating, tags } = request.body;
         const user_id = request.user.id;
+
+        const movieAlreadyExists = await knex("movies").where({ user_id, title }).first();
+
+        if (movieAlreadyExists) {
+            throw new AppError("Este título de filme já foi adicionado na sua biblioteca");
+        }
     
         if (rating < 1 || rating > 5) {
             throw new AppError("A nota deverá estar entre 1 e 5.");
