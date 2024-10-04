@@ -18,7 +18,7 @@ app.use(express.json());
 
 app.use("/files", express.static(uploadConfig.UPLOADS_FOLDER));
 
-app.use(routes);
+app.use(routes); 
 
 app.use((error, request, response, netxt) => {
     if (error instanceof AppError) {
