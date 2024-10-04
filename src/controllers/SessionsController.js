@@ -22,12 +22,15 @@ class SessionsController {
         }
 
         const { secret, expiresIn } = authConfig.jwt;
+
         const token = sign({}, secret, {
             subject: String(user.id),
             expiresIn
-        })
+        });
+        
+        delete user.password;
 
-       return response.json({ user, token });
+       return response.status(201).json({ user, token });
     }
 }
 
